@@ -6,10 +6,13 @@ import json
 from re import sub
 import time
 from requests import get
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 from selenium import webdriver
-
+from nltk.tokenize import RegexpTokenizer
 driver = webdriver.Firefox()
+stop_words = set(stopwords.words('english'))
+tokenizer = RegexpTokenizer(r'\w+')
 def search(search_keyword):
     
     driver.get('https://www.amazon.com/s?k='+ search_keyword + '&ref=nb_sb_noss_1')
@@ -26,7 +29,7 @@ def search(search_keyword):
 
     search_choice = input('please select search result by the number provided')
     search_choice = int(search_choice)
-    results[search_choice + 1].click()
+    results[search_choice - 1].click()
     
     time.sleep(3)
     
@@ -43,6 +46,7 @@ def parse_reviews(asin):
     
     reviews = []
     review_elements = []
+    clean_reviews = []
     
     for i in range(3):#get 3 pages worth of reviews or 30 reviews
         
@@ -56,8 +60,15 @@ def parse_reviews(asin):
         time.sleep(5)#gives the page time to load
 
     for review in reviews:#iterates through each item in list
-        
         print(review + 'END OF REVIEW\n')
+
+    for review in reviews: #removes punctuation and stop words
+        review = tokenizer.tokenize(review)
+        for word in review:
+            if word in stop_words:
+                word.pop()
+    for review in reviews:
+        print(review)
 
 search_input = input('please enter what you would like to search: ')
 
