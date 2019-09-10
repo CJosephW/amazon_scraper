@@ -62,13 +62,6 @@ def parse_reviews(asin):
     for review in reviews:#iterates through each item in list
         print(review + 'END OF REVIEW\n')
 
-    for review in reviews: #removes punctuation and stop words
-        review = tokenizer.tokenize(review)
-        for word in review:
-            if word in stop_words:
-                word.pop()
-    for review in reviews:
-        print(review)
 
 search_input = input('please enter what you would like to search: ')
 
