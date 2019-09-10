@@ -22,7 +22,11 @@ def search(search_keyword):
     search_index = 1
     
     results = driver.find_elements_by_css_selector("span.a-size-base-plus.a-color-base.a-text-normal")
+    other_results = driver.find_elements_by_css_selector("span.a-size-medium.a-color-base.a-text-normal")
 
+    for result in other_results:
+        results.append(result)
+    
     for result in results:
         print(str(search_index)+ ' ' + result.text)
         search_index += 1
@@ -62,6 +66,14 @@ def parse_reviews(asin):
     for review in reviews:#iterates through each item in list
         print(review + 'END OF REVIEW\n')
 
+    for review in reviews: #removes punctuation and stop words
+        review = tokenizer.tokenize(review)
+        token_review = word_tokenize(review)
+        for word in review:
+            if word in token_review:
+                word.pop()
+    for review in reviews:
+        print(token_review)
 
 search_input = input('please enter what you would like to search: ')
 
