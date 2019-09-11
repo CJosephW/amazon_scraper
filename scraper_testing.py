@@ -10,6 +10,8 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from selenium import webdriver
 from nltk.tokenize import RegexpTokenizer
+import string
+import re
 driver = webdriver.Firefox()
 stop_words = set(stopwords.words('english'))
 tokenizer = RegexpTokenizer(r'\w+')
@@ -25,6 +27,7 @@ def search(search_keyword):
     other_results = driver.find_elements_by_css_selector("span.a-size-medium.a-color-base.a-text-normal")
 
     for result in other_results:
+        
         results.append(result)
     
     for result in results:
@@ -65,16 +68,14 @@ def parse_reviews(asin):
 
     for review in reviews:#iterates through each item in list
         print(review + 'END OF REVIEW\n')
+        #clean_tokens += [word.strip(string.punctuation) for word in review.split(" ")]
+        
+    clean_reviews += [review.translate(str.maketrans("","", string.punctuation)) for review in reviews]
 
-    for review in reviews: #removes punctuation and stop words
-        review = tokenizer.tokenize(review)
-        token_review = word_tokenize(review)
-        for word in review:
-            if word in token_review:
-                word.pop()
-    for review in reviews:
-        print(token_review)
-
+    for review in clean_reviews:
+        print(review)
+    
+    
 search_input = input('please enter what you would like to search: ')
 
 parse_reviews(search(search_input))
