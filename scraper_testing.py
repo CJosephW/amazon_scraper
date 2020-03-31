@@ -5,7 +5,6 @@ from json import dumps, loads
 import json
 from re import sub
 import time
-from requests import get
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from selenium import webdriver
@@ -20,19 +19,21 @@ stop_words = set(stopwords.words('english'))
 tokenizer = RegexpTokenizer(r'\w+')
 
 good_synonyms = []
-
-is_noun = lambda pos: pos[:2] == 'NN'
+bad_syns = []
 
 for syn in wordnet.synsets('quality'):
     for l in syn.lemmas():
         good_synonyms.append(l.name())
+for syn in wordnet.synsets('bad'):
+    for l in syn.lemmas():
+        bad_syns.append(l.name())
 
 good_synonyms.append('good')
-bad_syns = wordnet.synsets('bad')
+
 bad_syns.append('bad')
 
 def search(search_keyword):
-    tokens = []
+    
 
     
     driver.get('https://www.amazon.com/s?k='+ search_keyword + '&ref=nb_sb_noss_1')
@@ -68,7 +69,7 @@ def search(search_keyword):
     return asin
 
 def parse_reviews(asin):
-    
+    clean_tokens = []
     reviews = []
     review_elements = []
     clean_reviews2 = []
@@ -87,25 +88,16 @@ def parse_reviews(asin):
 
     for review in reviews:#iterates through each item in list
         print(review + 'END OF REVIEW\n')
-        #clean_tokens += [word.strip(string.punctuation) for word in review.split(" ")]
+        clean_tokens += [word.strip(string.punctuation) for word in review.split(" ") if not word in stop_words]
         
     clean_reviews2 += [review.translate(str.maketrans("","", string.punctuation)) for review in reviews]
     clean_reviews = ''.join(reviews)
     clean_reviews = clean_reviews.split('.')
 
-    for i in range(len(clean_reviews)):
 
-        text = TextBlob(clean_reviews[i])
-        current_word = clean_reviews[i].split(' ')#see if words to the left and right are noun then grab if they are and put them before 
-        for each_word in current_word:
-            tokens += each_word
-        if any(syn in clean_reviews[i] for syn in good_synonyms):
-            print (clean_reviews[i] + 'good review')
-                #todo use text blob to find noun and noun pharses
-                #remove words like the and such
                 
     
-    return tokens
+    return clean_tokens
 search_input = input('please enter what you would like to search: ')
 
 
